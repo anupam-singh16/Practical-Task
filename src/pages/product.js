@@ -2,20 +2,31 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../store/productSlice";
 import ProductCard from "../component/productCard";
+import NoFound from "../component/noFound";
 
-const Product = () => {
+const Product = ({ searchText }) => {
   const dispatch = useDispatch();
 
   const selecterData = useSelector((state) => state?.users);
   const { error, products, status } = selecterData;
 
-  console.log(selecterData, "products");
+  const [searchProduct, setSearchProduct] = useState();
+
+  console.log(searchText, "searchText");
 
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchProducts());
     }
   }, []);
+
+  useEffect(() => {
+    const filterProduct = products?.filter((item) =>
+      item?.title.toLowerCase().includes(searchText?.toLowerCase())
+    );
+
+    setSearchProduct(filterProduct || products);
+  }, [searchText, products]);
 
   if (status === "loading") {
     return (
@@ -71,9 +82,15 @@ const Product = () => {
               ></th>
             </tr>
           </thead>
-          {products?.map((item) => {
-            return <ProductCard item={item} />;
-          })}
+          {searchProduct?.length === 0 ? (
+            <div style={{ position: "absolute", left: "25%", top: "40%" }}>
+              <NoFound />
+            </div>
+          ) : (
+            searchProduct?.map((item) => {
+              return <ProductCard item={item} />;
+            })
+          )}
         </table>
       </div>
     </div>

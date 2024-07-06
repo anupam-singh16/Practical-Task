@@ -9,6 +9,12 @@ function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [userData, setUserData] = useState({
+    firstName: fullName || "",
+    email: email || "",
+    password: password || "",
+  });
+
   const [fullNameError, setFullNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -41,40 +47,40 @@ function SignUp() {
     let valid = true;
 
     if (!fullName) {
-      setFullNameError("Full Name is required.");
+      setFullNameError("Title is required.");
       valid = false;
     }
 
     if (!email) {
-      setEmailError("Email is required.");
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError("Email is invalid.");
+      setEmailError("Price is required.");
       valid = false;
     }
 
     if (!password) {
-      setPasswordError("Password is required.");
-      valid = false;
-    } else if (password.length < 8) {
-      setPasswordError("Password must be at least 8 characters.");
+      setPasswordError("Description is required.");
       valid = false;
     }
-
     if (!confirmPassword) {
-      setConfirmPasswordError("Please confirm your password.");
-      valid = false;
-    } else if (password !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match.");
+      setConfirmPasswordError("Image is required.");
       valid = false;
     }
 
     if (valid) {
-      localStorage.setItem(
-        "userData",
-        JSON.stringify({ fullName, email, password })
-      );
-      navigate("/product");
+      fetch("https://fakestoreapi.com/products", {
+        method: "POST",
+        body: JSON.stringify({
+          title: fullName,
+          price: email,
+          description: password,
+          image: confirmPassword,
+          category: "electronic",
+        }),
+      })
+        .then((res) => res.json())
+        .then((json) => {
+          alert("Product Added");
+          navigate("/product");
+        });
       // Proceed with form submission or API call
       console.log("Form submitted:", { fullName, email, password });
 
@@ -92,22 +98,16 @@ function SignUp() {
   return (
     <div className="bg-gray-100 flex items-center justify-center h-screen">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
-        <div className="flex justify-center mb-6">
-          {/* Your SVG and title */}
-        </div>
-        <h2 className="text-2xl font-semibold text-center mb-4">
-          Create a new account
-        </h2>
-        <p className="text-gray-600 text-center mb-6">
-          Enter your details to register.
-        </p>
+        <div className="flex justify-center mb-6"></div>
+        <h2 className="text-2xl font-semibold text-center mb-4">Add Product</h2>
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
               htmlFor="fullName"
               className="block text-gray-700 text-sm font-semibold mb-2"
             >
-              Full Name *
+              Title
             </label>
             <input
               type="text"
@@ -117,7 +117,6 @@ function SignUp() {
               }`}
               value={fullName}
               onChange={handleFullNameChange}
-              placeholder="James Brown"
             />
             {fullNameError && (
               <p className="text-red-500 text-xs mt-1">{fullNameError}</p>
@@ -129,17 +128,16 @@ function SignUp() {
               htmlFor="email"
               className="block text-gray-700 text-sm font-semibold mb-2"
             >
-              Email *
+              Price
             </label>
             <input
-              type="email"
+              type="text"
               id="email"
               className={`form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500 ${
                 emailError && "border-red-500"
               }`}
               value={email}
               onChange={handleEmailChange}
-              placeholder="example@example.com"
             />
             {emailError && (
               <p className="text-red-500 text-xs mt-1">{emailError}</p>
@@ -151,17 +149,16 @@ function SignUp() {
               htmlFor="password"
               className="block text-gray-700 text-sm font-semibold mb-2"
             >
-              Password *
+              Description
             </label>
             <input
-              type="password"
+              type="text"
               id="password"
               className={`form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500 ${
                 passwordError && "border-red-500"
               }`}
               value={password}
               onChange={handlePasswordChange}
-              placeholder="********"
             />
             {passwordError && (
               <p className="text-red-500 text-xs mt-1">{passwordError}</p>
@@ -173,17 +170,16 @@ function SignUp() {
               htmlFor="confirmPassword"
               className="block text-gray-700 text-sm font-semibold mb-2"
             >
-              Confirm Password *
+              Image
             </label>
             <input
-              type="password"
+              type="text"
               id="confirmPassword"
               className={`form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500 ${
                 confirmPasswordError && "border-red-500"
               }`}
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
-              placeholder="********"
             />
             {confirmPasswordError && (
               <p className="text-red-500 text-xs mt-1">
@@ -196,18 +192,11 @@ function SignUp() {
             type="submit"
             className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
           >
-            Register
+            Add Product
           </button>
           {formError && (
             <p className="text-red-500 text-xs text-center mt-2">{formError}</p>
           )}
-          <p className="text-gray-600 text-xs text-center mt-4">
-            By clicking Register, you agree to accept Apex Financial's
-            <a href="#" className="text-blue-500 hover:underline">
-              Terms and Conditions
-            </a>
-            .
-          </p>
         </form>
       </div>
     </div>

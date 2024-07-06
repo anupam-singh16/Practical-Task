@@ -71,12 +71,12 @@ const CarouselComponent = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFadeOut(true); // Trigger fade-out animation
+      setFadeOut(true);
       setTimeout(() => {
         setIndex((prevIndex) => (prevIndex + 1) % slides.length);
-        setFadeOut(false); // Reset fade-out for next image
-      }, 500); // Wait for fade-out animation (0.5s) to complete
-    }, 2000); // Change slide every 1.3 seconds
+        setFadeOut(false);
+      }, 500);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [slides.length]);

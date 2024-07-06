@@ -10,6 +10,8 @@ import Carousel from "./component/carousel";
 import SignUp from "./pages/signUp";
 import Login from "./pages/Login";
 import Modal from "./component/modal";
+import AddProduct from "./pages/addProduct";
+import DetailsPage from "./pages/detailsPage";
 
 const store = configureStore({
   reducer: {
@@ -38,17 +40,21 @@ function App() {
     };
   }, []);
 
+  const [searchText, setSearchText] = useState("");
+
   return (
     <Provider store={store}>
       <div className={isSticky ? "sticky-header sticky" : "sticky-header"}>
-        <Navbar />
+        <Navbar setSearchText={setSearchText} />
       </div>
 
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/SignUp" element={<SignUp />} />
-        <Route path="/product" element={<Product />} />
+        <Route path="/product" element={<Product searchText={searchText} />} />
+        <Route path="/addProduct" element={<AddProduct />} />
+        <Route path="/detailPage/:id" element={<DetailsPage />} />
       </Routes>
     </Provider>
   );

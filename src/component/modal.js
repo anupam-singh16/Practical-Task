@@ -1,31 +1,43 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { updateProduct } from "../store/productSlice";
+import { useSelector } from "react-redux";
 
 function Modal({ id, setShow }) {
-  const dispatch = useDispatch();
-
   const selecterData = useSelector((state) => state?.users);
   const { products } = selecterData;
 
   const filterData = products.find((item) => item.id === id);
 
-  const [productrDetails, setProductDetails] = useState({
+  const [productDetails, setProductDetails] = useState({
     title: filterData?.title || "",
     price: filterData?.price || "",
     description: filterData?.description || "",
     image: filterData?.image || "",
   });
 
-  console.log(productrDetails, "handleChange");
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     setProductDetails({
-      ...productrDetails,
+      ...productDetails,
       [name]: value,
     });
+  };
+
+  const callApi = (id) => {
+    fetch(`https://fakestoreapi.com/products/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        title: productDetails?.title,
+        price: productDetails?.price,
+        description: productDetails?.description,
+        image: productDetails?.image,
+      }),
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        setShow(false);
+        console.log("Product details updated", json);
+      });
   };
 
   return (
@@ -38,28 +50,7 @@ function Modal({ id, setShow }) {
           role="alert"
           className="h-[50%] container mx-auto w-11/12 md:w-2/3 max-w-lg"
         >
-          <div
-            // style={{ display: "flex", justifyContent: "center" }}
-            className="relative py-8 px-5 md:px-10 bg-white shadow-md rounded border border-gray-400"
-          >
-            {/* <div className="w-full flex justify-start text-gray-600 mb-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="icon icon-tabler icon-tabler-wallet"
-                width="52"
-                height="52"
-                viewBox="0 0 24 24"
-                stroke-width="1"
-                stroke="currentColor"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" />
-                <path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12" />
-                <path d="M20 12v4h-4a2 2 0 0 1 0 -4h4" />
-              </svg>
-            </div> */}
+          <div className="relative py-8 px-5 md:px-10 bg-white shadow-md rounded border border-gray-400">
             <h1
               style={{ fontSize: "20px" }}
               className="text-gray-800 font-lg font-bold tracking-normal leading-tight mb-4"
@@ -73,7 +64,7 @@ function Modal({ id, setShow }) {
               Product Title
             </label>
             <input
-              value={productrDetails?.title}
+              value={productDetails?.title}
               name="title"
               onChange={handleChange}
               id="name"
@@ -87,29 +78,9 @@ function Modal({ id, setShow }) {
               Product Price
             </label>
             <div className="relative mb-5 mt-2">
-              {/* <div className="absolute text-gray-600 flex items-center px-4 border-r h-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="icon icon-tabler icon-tabler-credit-card"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" />
-                  <rect x="3" y="5" width="18" height="14" rx="3" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                  <line x1="7" y1="15" x2="7.01" y2="15" />
-                  <line x1="11" y1="15" x2="13" y2="15" />
-                </svg>
-              </div> */}
               <input
                 name="price"
-                value={productrDetails?.price}
+                value={productDetails?.price}
                 onChange={handleChange}
                 id="email2"
                 className="text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-16 text-sm border-gray-300 rounded border"
@@ -145,7 +116,7 @@ function Modal({ id, setShow }) {
                 </svg>
               </div>
               <input
-                value={productrDetails?.description}
+                value={productDetails?.description}
                 name="description"
                 onChange={handleChange}
                 id="expiry"
@@ -180,7 +151,7 @@ function Modal({ id, setShow }) {
                 </svg>
               </div>
               <input
-                value={productrDetails?.image}
+                value={productDetails?.image}
                 name="image"
                 onChange={handleChange}
                 id="cvc"
@@ -190,16 +161,13 @@ function Modal({ id, setShow }) {
             </div>
             <div className="flex items-center justify-start w-full">
               <button
-                onClick={() =>
-                  dispatch(
-                    updateProduct(filterData?.id, productrDetails, dispatch)
-                  )
-                }
+                onClick={() => callApi(filterData?.id)}
                 className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 transition duration-150 ease-in-out hover:bg-indigo-600 bg-indigo-700 rounded text-white px-8 py-2 text-sm"
               >
                 Submit
               </button>
               <button
+                onClick={() => setShow(false)}
                 className="focus:outline-none focus:ring-2 focus:ring-offset-2  focus:ring-gray-400 ml-3 bg-gray-100 transition duration-150 text-gray-600 ease-in-out hover:border-gray-400 hover:bg-gray-300 border rounded px-8 py-2 text-sm"
                 onclick="modalHandler()"
               >
@@ -233,14 +201,6 @@ function Modal({ id, setShow }) {
           </div>
         </div>
       </div>
-      {/* <div className="w-full flex justify-center py-12" id="button">
-        <button
-          className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 mx-auto transition duration-150 ease-in-out hover:bg-indigo-600 bg-indigo-700 rounded text-white px-4 sm:px-8 py-2 text-xs sm:text-sm"
-          onclick="modalHandler(true)"
-        >
-          Open Modal
-        </button>
-      </div> */}
     </dh-component>
   );
 }

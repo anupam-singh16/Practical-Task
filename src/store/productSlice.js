@@ -3,9 +3,15 @@ import axios from "axios";
 
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
-  async () => {
+  async (category) => {
+    let url = "";
+    if (category) {
+      url = `https://fakestoreapi.com/products/category/${category}`;
+    } else {
+      url = `https://fakestoreapi.com/products`;
+    }
     try {
-      const response = await axios.get(`https://fakestoreapi.com/products`);
+      const response = await axios.get(url);
       return response.data;
     } catch (error) {
       throw error;
@@ -20,7 +26,8 @@ export const deleteProduct = createAsyncThunk(
       const response = await axios.delete(
         `https://fakestoreapi.com/products/${id}`
       );
-      dispatch(fetchProducts()); // Dispatch fetchProducts after successful delete
+      alert("Product Deleted");
+      dispatch(fetchProducts());
     } catch (error) {
       throw error;
     }
@@ -29,18 +36,21 @@ export const deleteProduct = createAsyncThunk(
 
 export const updateProduct = createAsyncThunk(
   "products/updateProduct",
-  async (id, productData) => {
+  async (id, productDetails) => {
+    console.log(id, productDetails, "productDetails");
     try {
-      const response = await axios.put(
-        `https://fakestoreapi.com/products/${id}`,
-        {
-          title: productData.title,
-          price: productData.price,
-          description: productData.description,
-          image: productData.image,
-          category: productData.category,
-        }
-      );
+      fetch(`https://fakestoreapi.com/products/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          title: productDetails?.title,
+          price: productDetails?.price,
+          description: productDetails?.description,
+          image: productDetails?.image,
+          // category: "electronic",
+        }),
+      })
+        .then((res) => res.json())
+        .then((json) => alert("Product Updated "));
     } catch (error) {
       throw error;
     }
