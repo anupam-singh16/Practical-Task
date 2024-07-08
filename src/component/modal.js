@@ -36,6 +36,7 @@ function Modal({ id, setShow }) {
       .then((res) => res.json())
       .then((json) => {
         setShow(false);
+        alert("Product details updated");
         console.log("Product details updated", json);
       });
   };
