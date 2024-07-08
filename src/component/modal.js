@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updateProduct } from "../store/productSlice";
 
 function Modal({ id, setShow }) {
+  const dispatch = useDispatch();
+
   const selecterData = useSelector((state) => state?.users);
   const { products } = selecterData;
 
@@ -41,11 +44,31 @@ function Modal({ id, setShow }) {
       });
   };
 
+  const handleFormSubmit = async (event) => {
+    try {
+      const { title, price, description, image } = productDetails;
+      await dispatch(
+        updateProduct({
+          id: filterData?.id,
+          formData: { title, price, description, image },
+        })
+      );
+    } catch (error) {
+      console.error("Failed to update product:", error);
+      alert("Failed to update product. Please try again.");
+    }
+  };
+
   return (
     <dh-component>
       <div
         className="py-12  transition duration-150 ease-in-out z-10 absolute top-0 right-0 bottom-0 left-0"
         id="modal"
+        style={{
+          // overflow: "auto",
+          // backgroundColor: "rgb(0,0,0)",
+          backgroundColor: "rgba(0,0,0,0.4)",
+        }}
       >
         <div
           role="alert"
@@ -162,7 +185,7 @@ function Modal({ id, setShow }) {
             </div>
             <div className="flex items-center justify-start w-full">
               <button
-                onClick={() => callApi(filterData?.id)}
+                onClick={() => handleFormSubmit(filterData?.id)}
                 className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 transition duration-150 ease-in-out hover:bg-indigo-600 bg-indigo-700 rounded text-white px-8 py-2 text-sm"
               >
                 Submit

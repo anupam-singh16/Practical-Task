@@ -36,17 +36,39 @@ export const deleteProduct = createAsyncThunk(
 
 export const updateProduct = createAsyncThunk(
   "products/updateProduct",
-  async (id, productDetails) => {
-    console.log(id, productDetails, "productDetails");
+  async (data) => {
+    const { id, formData } = data;
     try {
       fetch(`https://fakestoreapi.com/products/${id}`, {
         method: "PUT",
         body: JSON.stringify({
-          title: productDetails?.title,
-          price: productDetails?.price,
-          description: productDetails?.description,
-          image: productDetails?.image,
-          // category: "electronic",
+          title: formData?.title,
+          price: formData?.price,
+          description: formData?.description,
+          image: formData?.image,
+        }),
+      })
+        .then((res) => res.json())
+        .then((json) => alert("Product added "));
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+export const addProduct = createAsyncThunk(
+  "products/updateProduct",
+  async (data) => {
+    const { id, formData } = data;
+    console.log(formData, "ahfgsadsjsagfjsfsj");
+    try {
+      fetch(`https://fakestoreapi.com/products`, {
+        method: "POST",
+        body: JSON.stringify({
+          title: formData?.title,
+          price: formData?.price,
+          description: formData?.description,
+          image: formData?.image,
         }),
       })
         .then((res) => res.json())

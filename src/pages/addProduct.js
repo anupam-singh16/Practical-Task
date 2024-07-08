@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { addProduct } from "../store/productSlice";
 
 function SignUp() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [fullName, setFullName] = useState("");
@@ -41,6 +44,19 @@ function SignUp() {
     setConfirmPasswordError("");
   };
 
+  const handleFormSubmit = async (event) => {
+    try {
+      await dispatch(
+        addProduct({
+          formData: { fullName, email, password, confirmPassword },
+        })
+      );
+    } catch (error) {
+      console.error("Failed to update product:", error);
+      alert("Failed to update product. Please try again.");
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -66,21 +82,7 @@ function SignUp() {
     }
 
     if (valid) {
-      fetch("https://fakestoreapi.com/products", {
-        method: "POST",
-        body: JSON.stringify({
-          title: fullName,
-          price: email,
-          description: password,
-          image: confirmPassword,
-          category: "electronic",
-        }),
-      })
-        .then((res) => res.json())
-        .then((json) => {
-          alert("Product Added");
-          navigate("/product");
-        });
+      handleFormSubmit();
       // Proceed with form submission or API call
       console.log("Form submitted:", { fullName, email, password });
 
