@@ -21,6 +21,8 @@ const store = configureStore({
 
 function App() {
   const [isSticky, setSticky] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,7 +42,8 @@ function App() {
     };
   }, []);
 
-  const [searchText, setSearchText] = useState("");
+  const userAuth = JSON.parse(localStorage.getItem("userData"));
+
 
   return (
     <Provider store={store}>
@@ -48,13 +51,14 @@ function App() {
         <Navbar setSearchText={setSearchText} />
       </div>
 
+
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/SignUp" element={<SignUp />} />
-        <Route path="/product" element={<Product searchText={searchText} />} />
-        <Route path="/addProduct" element={<AddProduct />} />
-        <Route path="/detailPage/:id" element={<DetailsPage />} />
+        <Route path="/product" element={userAuth ? <Product searchText={searchText} /> : <SignUp />} />
+        <Route path="/addProduct" element={userAuth ? <AddProduct /> : <SignUp />} />
+        <Route path="/detailPage/:id" element={userAuth ? <DetailsPage /> : <SignUp />} />
       </Routes>
     </Provider>
   );

@@ -53,6 +53,8 @@ function Modal({ id, setShow }) {
           formData: { title, price, description, image },
         })
       );
+
+      setShow(false)
     } catch (error) {
       console.error("Failed to update product:", error);
       alert("Failed to update product. Please try again.");
